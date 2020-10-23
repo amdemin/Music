@@ -1,5 +1,5 @@
 # Music bot
-## @melody_tg_bot
+## @melody_tg_bot https://t.me/melody_tg_bot
 
 In this project you can find and download tracks that are not available in Apple Music or Spotify. 
 This is mainly for underground music. The bot uses dropbox API to download & upload files. It is hosted on PaaS Heroku.
