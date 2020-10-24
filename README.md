@@ -15,11 +15,12 @@ This is mainly for underground music. The bot uses dropbox API to download & upl
   * `pip install dropbox`
   * `pip install PyTelegramBotApi`
   * get API keys from dropbox and telegram bot father, replace them accordingly
-  * create *Procfile* and put a line with the following format with a name of your main python file
+  * create *Procfile* and enter the name of your file to run
   * create *requirements.txt* list
-  * create an account in heroku and deploy github repository (Procfile and requirements.txt are necessary for deployment)
+  * create an account in Heroku and deploy GitHub repository (Procfile and requirements.txt are necessary for deployment)
 
  ## Work flow
   In order to find the song or artist, just enter name to bot and it will search songs in the dropbox cloud
-    <img src="images/artist_name.jpg" width="40%" height="40%" alt="artist_name">
+  At the current moment you can find music for **Cream Soda**, **Low Pulse**, **LXST CXNTURY**, **F3RCTAK**
+    <img src="images/artist_name.jpg" width="40%" height="40%" alt="artist_name"><br />
     <img src="images/song_name.jpg" width="40%" height="40%" alt="song_name">
