@@ -56,7 +56,8 @@ dbx_token = os.getenv('dbx_token')
 bot = telebot.TeleBot(tg_token)
 # initiate dropbox api
 dbx = dropbox.Dropbox(dbx_token)
-music_dict = {'#1' : 'cream soda', '#2' : 'lxst cxntury', '#3': 'f3rctak', '#4': 'low pulse', '#5': 'vacuum'}
+music_dict = {'#1' : 'cream soda', '#2' : 'lxst cxntury', '#3': 'f3rctak', '#4': 'low pulse', '#5': 'vacuum',
+'#6': 'don diablo', '#7': 'vvpskvd', '#8': 'phonk'}
 
 
 @bot.message_handler(commands=['start'])
