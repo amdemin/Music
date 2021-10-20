@@ -46,8 +46,10 @@ def extract_music_files(text, music_dict):
 
                     # to get the right tag whatever the order is
                     # for tag, value in music_dict.items():
-                    #    if value == folder_names[i]:
+                    #if value == folder_names[i]:
                     #        row.append(tag)
+                    row.append(music_dict['#' + str(i+1)])
+
                     data.append(row)
         data.sort()
         return data
