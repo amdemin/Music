@@ -56,8 +56,13 @@ dbx_token = os.getenv('dbx_token')
 bot = telebot.TeleBot(tg_token)
 # initiate dropbox api
 dbx = dropbox.Dropbox(dbx_token)
-music_dict = {'#1' : 'cream soda', '#2' : 'lxst cxntury', '#3': 'f3rctak', '#4': 'low pulse', '#5': 'vacuum',
-'#6': 'don diablo', '#7': 'vvpskvd', '#8': 'phonk', '#9': 'apple music', '#10': 'monolithic'}
+#music_dict = {'#1' : 'cream soda', '#2' : 'lxst cxntury', '#3': 'f3rctak', '#4': 'low pulse', '#5': 'vacuum',
+# '#6': 'don diablo', '#7': 'vvpskvd', '#8': 'phonk', '#9': 'apple music', '#10': 'monolithic'}
+music_dict = {}
+folders = dbx.files_list_folder("/Music").entries
+# define tags for every folder of the music cloud
+for i in range(0, len(folders)):
+    music_dict['#' + str(i+1)] = folders[i].name
 
 
 @bot.message_handler(commands=['start'])

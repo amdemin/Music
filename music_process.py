@@ -21,20 +21,21 @@ def check_text(text):
 
 def extract_music_files(text, music_dict):
     try:
-        folders = dbx.files_list_folder("/Music").entries
-        folder_names= []
+        # folders = dbx.files_list_folder("/Music").entries
+        # folder_names= []
         
         # to retrieve folder names from folder metadata
-        for i in range(0, len(folders)):
-            folder_names.append(folders[i].name)
+        #for i in range(0, len(folders)):
+        #    folder_names.append(folders[i].name)
 
+        # check f3rctak unique name
         text = check_text(text)
 
         data = []
         # to search songs by input
-        for i in range(0, len(folder_names)):
+        for i in range(0, len(music_dict)):
             # dropbox search function (path, request)
-            result = dbx.files_search("/Music/" + folder_names[i], text)
+            result = dbx.files_search("/Music/" + folder_names['#' + str(i+1)], text)
             # song metadata
             result = result.matches
             if result != []:
@@ -44,9 +45,9 @@ def extract_music_files(text, music_dict):
                     row.append(result[k].metadata.name)
 
                     # to get the right tag whatever the order is
-                    for tag, value in music_dict.items():
-                        if value == folder_names[i]:
-                            row.append(tag)
+                    #for tag, value in music_dict.items():
+                    #    if value == folder_names[i]:
+                    #        row.append(tag)
                     data.append(row)
         data.sort()
         return data
