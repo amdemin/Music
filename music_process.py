@@ -35,7 +35,7 @@ def extract_music_files(text, music_dict):
         # to search songs by input
         for i in range(0, len(music_dict)):
             # dropbox search function (path, request)
-            result = dbx.files_search("/Music/" + folder_names['#' + str(i+1)], text)
+            result = dbx.files_search("/Music/" + music_dict['#' + str(i+1)], text)
             # song metadata
             result = result.matches
             if result != []:
