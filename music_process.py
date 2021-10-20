@@ -48,7 +48,7 @@ def extract_music_files(text, music_dict):
                     # for tag, value in music_dict.items():
                     #if value == folder_names[i]:
                     #        row.append(tag)
-                    row.append(music_dict['#' + str(i+1)])
+                    row.append('#' + str(i+1))
 
                     data.append(row)
         data.sort()

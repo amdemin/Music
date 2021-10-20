@@ -300,17 +300,13 @@ def process_input(message, page=1, text=""):
                     result_split_page[page_file][i][0] = result_split_page[page_file][i][0].replace(".mp3", "")
                     audio_format = ".mp3"
                 # callback_data API is limited to 64 bytes (64 letters long)
-                print("Hello")
                 button = types.InlineKeyboardButton(text=result_split_page[page_file][i][0], 
                             callback_data="audio_row," + str(i)  + "," + audio_format + "," + result_split_page[page_file][i][1])
-                print("Hello 2")
                 keyboard.add(button)
 
             # initiate paginator
-            print("Hello 3")
             paginator = InlineKeyboardPaginator(int(len(result_split_page)), current_page=page, data_pattern='page#{page}#' + str(text))
 
-            print('Hello 4')
             bot.send_message(message.chat.id, "Found songs: ", reply_markup=keyboard)
             if len(result_split_page) > 1:
                 # send number of pages when at least more than one
