@@ -287,6 +287,7 @@ def process_input(message, page=1, text=""):
         keyboard = types.InlineKeyboardMarkup()
         result = extract_music_files(text, music_dict)
         # split list into small sublists limited by 10
+        print(result)
         result_split_page = [result[x:x+10] for x in range(0, len(result), 10)]
 
         # add button to telegram according to page numeration
