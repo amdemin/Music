@@ -328,7 +328,7 @@ def process_input(message, page=1, text=""):
                     # audio_format = ".mp3"
                 # callback_data API is limited to 64 bytes (64 letters long)
                 button = types.InlineKeyboardButton(text=result_split_page[page_file][i][0], 
-                            callback_data="audio_row;" + str(i)  + ";" + audio_format + ";" + + str(result_split_page[page_file][i][1]) + ";" + str(result_split_page[page_file][i][2]))
+                            callback_data="audio_row;" + str(i)  + ";" + audio_format + ";" + str(result_split_page[page_file][i][1]) + ";" + str(result_split_page[page_file][i][2]))
                 keyboard.add(button)
 
             # initiate paginator
@@ -341,7 +341,7 @@ def process_input(message, page=1, text=""):
         else:
             bot.send_message(message.chat.id, "No results")
     except Exception as e:
-        print('Error in process_input', e)
+        print('Error in process_input:', e)
         print(traceback.format_exc())
         # bot.send_message(message.from_user.id, e)
         bot.send_message(message.chat.id, "Error occured, no results")
@@ -357,7 +357,7 @@ def page_callback(call):
         bot.delete_message(call.message.chat.id, msg_code)
         process_input(call.message, page, text)
     except Exception as e:
-        print('Error in page_callback', e)
+        print('Error in page_callback:', e)
         print(traceback.format_exc())
 
 
@@ -380,7 +380,7 @@ def audio_row_callback(call):
         bot.send_audio(call.from_user.id, res.content, title=track['artist'] + ' - ' + track['title'])
 
     except Exception as e:
-        print('Error in audio_row_callback', e)
+        print('Error in audio_row_callback:', e)
         print(traceback.format_exc())
 
 
