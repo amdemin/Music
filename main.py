@@ -17,6 +17,7 @@ import re
 import random as rd
 import vk_api
 from vk_api.audio import VkAudio
+import traceback
 
 def convert_photos(message):
     try:
@@ -318,10 +319,10 @@ def process_input(message, page=1, text=""):
 
         result_split_page = [result[x:x+5] for x in range(0, number_of_songs, 5)]
 
+        audio_format = ".mp3"
         page_file = 0
         if len(result_split_page) != 0:  
             for i in range(0, len(result_split_page[page_file])):
-                audio_format = ".mp3"
                 if ".mp3" in result_split_page[page_file][i][0]:
                     result_split_page[page_file][i][0] = result_split_page[page_file][i][0].replace(".mp3", "")
                     # audio_format = ".mp3"
@@ -340,7 +341,8 @@ def process_input(message, page=1, text=""):
         else:
             bot.send_message(message.chat.id, "No results")
     except Exception as e:
-        print(e)
+        print('Error in process_input', e)
+        print(traceback.format_exc())
         # bot.send_message(message.from_user.id, e)
         bot.send_message(message.chat.id, "Error occured, no results")
 
@@ -355,10 +357,11 @@ def page_callback(call):
         bot.delete_message(call.message.chat.id, msg_code)
         process_input(call.message, page, text)
     except Exception as e:
-        print(e)
+        print('Error in page_callback', e)
+        print(traceback.format_exc())
 
 
-@bot.callback_query_handler(func=lambda call: call.data.split(',')[0]=='audio_row')
+@bot.callback_query_handler(func=lambda call: call.data.split(';')[0]=='audio_row')
 def audio_row_callback(call):
     try:
         audio_split = call.data.split(';')
@@ -366,7 +369,7 @@ def audio_row_callback(call):
         song_name = call.message.json["reply_markup"]["inline_keyboard"][row_number][0]["text"]
         if ".mp3" in audio_split[2]:
             song_name = song_name + ".mp3"
-            
+
         # tag = audio_split[3]
         # folder = music_dict[tag]
         # metadata, res = dbx.files_download(path="/Music/" + folder + "/" + song_name)
@@ -377,7 +380,8 @@ def audio_row_callback(call):
         bot.send_audio(call.from_user.id, res.content, title=track['artist'] + ' - ' + track['title'])
 
     except Exception as e:
-        print(e)
+        print('Error in audio_row_callback', e)
+        print(traceback.format_exc())
 
 
 @bot.callback_query_handler(func=lambda call: True)
