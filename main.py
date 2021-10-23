@@ -11,6 +11,12 @@ from PIL import Image
 from boto.s3.connection import S3Connection
 import os
 from telegram_bot_pagination import InlineKeyboardPaginator
+import urllib.request as urllib2
+import time
+import re
+import random as rd
+import vk_api
+from vk_api.audio import VkAudio
 
 def convert_photos(message):
     try:
@@ -51,6 +57,13 @@ def random_name():
 # retrieve values from Config Vars in Heroku
 tg_token = os.getenv('tg_token')
 dbx_token = os.getenv('dbx_token')
+vk_login = os.getenv('vk_login')
+vk_password = os.getenv('vk_password')
+
+vk_session = vk_api.VkApi(vk_login, vk_password)
+vk_session.auth()
+vk = vk_session.get_api()
+vk_audio = VkAudio(vk_session)
 
 # initiate telegram api
 bot = telebot.TeleBot(tg_token)
@@ -278,30 +291,43 @@ def process_input(message, page=1, text=""):
     try:
 
         # this code is used to identify repeated requests from one input
-        text = text.split("^ ")
+        text = text.split("• ")
         if len(text) > 1:
             text = text[1]
         else:
             text = text[0]
 
         keyboard = types.InlineKeyboardMarkup()
-        result = extract_music_files(text, music_dict)
+        # result = extract_music_files(text, music_dict)
         # split list into small sublists limited by 10
+        # result_split_page = [result[x:x+10] for x in range(0, len(result), 10)]
+        # add button to telegram according to page numeration
+        # page_file = page-1
+        result = []
+        number_of_songs = len(list(vk_audio.search(text, count=15, offset=0)))
+        time.sleep(rd.uniform(0.5,1.1))
+        tracks = list(vk_audio.search(text, count=5, offset=5*(page-1)))
+        for song in range(0, len(tracks)):
+            row = []
+            row.append(tracks[song]['artist'] + ' ' + tracks[song]['title'])
+            row.append(tracks[song]['owner_id'])
+            row.append(tracks[song]['id'])
+            result.append(row)
+
         print(result)
 
-        result_split_page = [result[x:x+10] for x in range(0, len(result), 10)]
+        result_split_page = [result[x:x+5] for x in range(0, number_of_songs, 5)]
 
-        # add button to telegram according to page numeration
-        page_file = page-1
+        page_file = 0
         if len(result_split_page) != 0:  
             for i in range(0, len(result_split_page[page_file])):
-                audio_format = ""
+                audio_format = ".mp3"
                 if ".mp3" in result_split_page[page_file][i][0]:
                     result_split_page[page_file][i][0] = result_split_page[page_file][i][0].replace(".mp3", "")
-                    audio_format = ".mp3"
+                    # audio_format = ".mp3"
                 # callback_data API is limited to 64 bytes (64 letters long)
                 button = types.InlineKeyboardButton(text=result_split_page[page_file][i][0], 
-                            callback_data="audio_row," + str(i)  + "," + audio_format + "," + result_split_page[page_file][i][1])
+                            callback_data="audio_row;" + str(i)  + ";" + audio_format + ";" + + str(result_split_page[page_file][i][1]) + ";" + str(result_split_page[page_file][i][2]))
                 keyboard.add(button)
 
             # initiate paginator
@@ -310,7 +336,7 @@ def process_input(message, page=1, text=""):
             bot.send_message(message.chat.id, "Found songs: ", reply_markup=keyboard)
             if len(result_split_page) > 1:
                 # send number of pages when at least more than one
-                bot.send_message(message.chat.id, "Page: " + str(page) + " ^ " + str(text), reply_markup=paginator.markup, parse_mode='Markdown')
+                bot.send_message(message.chat.id, "Page: " + str(page) + " • " + str(text), reply_markup=paginator.markup, parse_mode='Markdown')
         else:
             bot.send_message(message.chat.id, "No results")
     except Exception as e:
@@ -335,17 +361,21 @@ def page_callback(call):
 @bot.callback_query_handler(func=lambda call: call.data.split(',')[0]=='audio_row')
 def audio_row_callback(call):
     try:
-        parts = call.data.split(',')
-        row_number = int(parts[1])
+        audio_split = call.data.split(';')
+        row_number = int(audio_split[1])
         song_name = call.message.json["reply_markup"]["inline_keyboard"][row_number][0]["text"]
-        if ".mp3" in parts[2]:
+        if ".mp3" in audio_split[2]:
             song_name = song_name + ".mp3"
-        tag = parts[3]
-        print(song_name)
-        print(tag)
-        folder = music_dict[tag]
-        metadata, res = dbx.files_download(path="/Music/" + folder + "/" + song_name)
-        bot.send_audio(call.from_user.id, res.content, title=song_name.replace(".mp3", ""))
+            
+        # tag = audio_split[3]
+        # folder = music_dict[tag]
+        # metadata, res = dbx.files_download(path="/Music/" + folder + "/" + song_name)
+        # bot.send_audio(call.from_user.id, res.content, title=song_name.replace(".mp3", ""))
+
+        track = vk_audio.get_audio_by_id(int(audio_split[3]), int(audio_split[4]))
+        res = requests.get(track['url'])
+        bot.send_audio(call.from_user.id, res.content, title=track['artist'] + ' - ' + track['title'])
+
     except Exception as e:
         print(e)
 
