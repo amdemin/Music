@@ -299,28 +299,32 @@ def process_input(message, page=1, text=""):
             text = text[0]
 
         keyboard = types.InlineKeyboardMarkup()
-        # result = extract_music_files(text, music_dict)
-        # split list into small sublists limited by 10
-        # result_split_page = [result[x:x+10] for x in range(0, len(result), 10)]
-        # add button to telegram according to page numeration
-        # page_file = page-1
-        result = []
-        number_of_songs = len(list(vk_audio.search(text, count=15, offset=0)))
-        time.sleep(rd.uniform(0.5,1.1))
-        tracks = list(vk_audio.search(text, count=5, offset=5*(page-1)))
-        for song in range(0, len(tracks)):
-            row = []
-            row.append(tracks[song]['artist'] + ' ' + tracks[song]['title'])
-            row.append(tracks[song]['owner_id'])
-            row.append(tracks[song]['id'])
-            result.append(row)
+
+        # retrieve songs from the private dropbox cloud
+        if 'dropbox' in text:
+            result = extract_music_files(text, music_dict)
+            # split list into small sublists limited by 10
+            result_split_page = [result[x:x+10] for x in range(0, len(result), 10)]
+            # add button to telegram according to page numeration
+            page_file = page-1
+        # retrieve songs from public vk
+        else:
+            result = []
+            page_file = 0
+            number_of_songs = len(list(vk_audio.search(text, count=15, offset=0)))
+            time.sleep(rd.uniform(0.5,1.1))
+            tracks = list(vk_audio.search(text, count=5, offset=5*(page-1)))
+            for song in range(0, len(tracks)):
+                row = []
+                row.append(tracks[song]['artist'] + ' ' + tracks[song]['title'])
+                row.append(tracks[song]['owner_id'])
+                row.append(tracks[song]['id'])
+                result.append(row)
 
         print(result)
 
         result_split_page = [result[x:x+5] for x in range(0, number_of_songs, 5)]
-
         audio_format = ".mp3"
-        page_file = 0
         if len(result_split_page) != 0:  
             for i in range(0, len(result_split_page[page_file])):
                 if ".mp3" in result_split_page[page_file][i][0]:
@@ -332,7 +336,7 @@ def process_input(message, page=1, text=""):
                 keyboard.add(button)
 
             # initiate paginator
-            paginator = InlineKeyboardPaginator(int(len(result_split_page)), current_page=page, data_pattern='page#{page}#' + str(text))
+            paginator = InlineKeyboardPaginator(int(len(result_split_page)), current_page=page, data_pattern='page;{page};' + str(text))
 
             bot.send_message(message.chat.id, "Found songs: ", reply_markup=keyboard)
             if len(result_split_page) > 1:
@@ -347,11 +351,11 @@ def process_input(message, page=1, text=""):
         bot.send_message(message.chat.id, "Error occured, no results")
 
 # this callback handler is only for paginator requests
-@bot.callback_query_handler(func=lambda call: call.data.split('#')[0]=='page')
+@bot.callback_query_handler(func=lambda call: call.data.split(';')[0]=='page')
 def page_callback(call):
     try:
-        page = int(call.data.split('#')[1])
-        text = call.data.split('#')[2]
+        page = int(call.data.split(';')[1])
+        text = call.data.split(';')[2]
         msg_code = call.message.message_id
         bot.delete_message(call.message.chat.id, msg_code-1)
         bot.delete_message(call.message.chat.id, msg_code)
@@ -370,14 +374,17 @@ def audio_row_callback(call):
         if ".mp3" in audio_split[2]:
             song_name = song_name + ".mp3"
 
-        # tag = audio_split[3]
-        # folder = music_dict[tag]
-        # metadata, res = dbx.files_download(path="/Music/" + folder + "/" + song_name)
-        # bot.send_audio(call.from_user.id, res.content, title=song_name.replace(".mp3", ""))
-
-        track = vk_audio.get_audio_by_id(int(audio_split[3]), int(audio_split[4]))
-        res = requests.get(track['url'])
-        bot.send_audio(call.from_user.id, res.content, title=track['artist'] + ' - ' + track['title'])
+        # download the chosen song from the private dropbox cloud
+        if '#' in audio_split[3]:
+            tag = audio_split[3]
+            folder = music_dict[tag]
+            metadata, res = dbx.files_download(path="/Music/" + folder + "/" + song_name)
+            bot.send_audio(call.from_user.id, res.content, title=song_name.replace(".mp3", ""))
+        # download the chosen song from the public vk
+        else:
+            track = vk_audio.get_audio_by_id(int(audio_split[3]), int(audio_split[4]))
+            res = requests.get(track['url'])
+            bot.send_audio(call.from_user.id, res.content, title=track['artist'] + ' - ' + track['title'])
 
     except Exception as e:
         print('Error in audio_row_callback:', e)

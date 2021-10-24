@@ -49,7 +49,7 @@ def extract_music_files(text, music_dict):
                     #if value == folder_names[i]:
                     #        row.append(tag)
                     row.append('#' + str(i+1))
-
+                    row.append('')
                     data.append(row)
         data.sort()
         return data
