@@ -320,10 +320,10 @@ def process_input(message, page=1, text=""):
                 row.append(tracks[song]['owner_id'])
                 row.append(tracks[song]['id'])
                 result.append(row)
+            result_split_page = [result[x:x+5] for x in range(0, number_of_songs, 5)]
 
         print(result)
 
-        result_split_page = [result[x:x+5] for x in range(0, number_of_songs, 5)]
         audio_format = ".mp3"
         if len(result_split_page) != 0:  
             for i in range(0, len(result_split_page[page_file])):
