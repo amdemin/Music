@@ -302,7 +302,8 @@ def process_input(message, page=1, text=""):
 
         # retrieve songs from the private dropbox cloud
         if 'dropbox' in text:
-            result = extract_music_files(text, music_dict)
+            cut_text = text.strip('dropbox')
+            result = extract_music_files(cut_text, music_dict)
             # split list into small sublists limited by 10
             result_split_page = [result[x:x+10] for x in range(0, len(result), 10)]
             # add button to telegram according to page numeration
