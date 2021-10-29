@@ -306,9 +306,10 @@ def process_input(message, page=1, text=""):
         # retrieve songs from public vk
         else:
             vk_session = vk_api.VkApi(vk_login, vk_password)
-            vk_session.auth()
+            vk_session.auth(token_only=True)
             vk = vk_session.get_api()
             vk_audio = VkAudio(vk_session)
+            time.sleep(rd.uniform(0.5,1.1))
             result = []
             page_file = 0
             number_of_songs = len(list(vk_audio.search(text, count=15, offset=0)))
@@ -383,9 +384,10 @@ def audio_row_callback(call):
         # download the chosen song from the public vk
         else:
             vk_session = vk_api.VkApi(vk_login, vk_password)
-            vk_session.auth()
+            vk_session.auth(token_only=True)
             vk = vk_session.get_api()
             vk_audio = VkAudio(vk_session)
+            time.sleep(rd.uniform(0.5,1.1))
             track = vk_audio.get_audio_by_id(int(audio_split[3]), int(audio_split[4]))
             res = requests.get(track['url'])
             bot.send_audio(call.from_user.id, res.content, title=track['artist'] + ' - ' + track['title'])
