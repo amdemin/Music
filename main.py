@@ -143,12 +143,12 @@ def shot_command(message):
                     separate = photos[name_photo].split(".")  # to extract the password and format
                     format = separate[len(separate) - 1]
                     if format.lower() == "mp4":
-                        if word == separate[0].lower():
+                        if word.lower() == separate[0].lower():
                             button = types.InlineKeyboardButton(text=separate[1], callback_data="video" + str(num))
                             keyboard.add(button)
                             flag = True
                     elif format.lower() == "jpg":
-                        if word == separate[0].lower():
+                        if word.lower() == separate[0].lower():
                             button = types.InlineKeyboardButton(text=separate[1], callback_data="photo" + str(num))
                             keyboard.add(button)
                             flag = True
