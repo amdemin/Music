@@ -36,46 +36,11 @@ def extract_music_files(text, music_dict):
                     row = []
                     # retrieve song name from metadata
                     row.append(result[k].metadata.name)
-
-                    # to get the right tag whatever the order is
-                    # for tag, value in music_dict.items():
-                    #if value == folder_names[i]:
-                    #        row.append(tag)
                     row.append('#' + str(i+1))
                     row.append('')
                     data.append(row)
         data.sort()
         return data
-
-        # # folders = dbx.files_list_folder("/Music").entries
-        # # folder_names= []
-        
-        # # # to retrieve folder names from folder metadata
-        # # for i in range(0, len(folders)):
-        # #     folder_names.append(folders[i].name)
-
-        # # text = check_text(text)
-
-        # data = []
-        # # to search songs by input
-        # for i in range(0, len(folder_names)):
-        #     # dropbox search function (path, request)
-        #     result = dbx.files_search("/Music/" + folder_names[i], text)
-        #     # song metadata
-        #     result = result.matches
-        #     if result != []:
-        #         for k in range(0, len(result)):
-        #             row = []
-        #             # retrieve song name from metadata
-        #             row.append(result[k].metadata.name)
-
-        #             # to get the right tag whatever the order is
-        #             for tag, value in music_dict.items():
-        #                 if value == folder_names[i]:
-        #                     row.append(tag)
-        #             data.append(row)
-        # data.sort()
-        # return data
 
     except Exception as e:
         print(e)

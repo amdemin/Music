@@ -71,9 +71,7 @@ def process_input(message, page=1, text=""):
         
         keyboard = types.InlineKeyboardMarkup()
 
-        # cut_text = text.strip('dropbox')
-        cut_text = text
-        result = extract_music_files(cut_text, music_dict)
+        result = extract_music_files(text, music_dict)
         # split list into small sublists limited by 10
         result_split_page = [result[x:x+10] for x in range(0, len(result), 10)]
         # add button to telegram according to page numeration
@@ -136,53 +134,10 @@ def audio_row_callback(call):
             folder = music_dict[tag]
             metadata, res = dbx.files_download(path="/Music/" + folder + "/" + song_name)
             bot.send_audio(call.from_user.id, res.content, title=song_name.replace(".mp3", ""))
-        # download the chosen song from the public vk
-        else:
-
-            # autorisation process
-            vk_session = vk_api.VkApi(vk_login, vk_password)
-            vk_session.auth(token_only=True)
-            vk = vk_session.get_api()
-            vk_audio = VkAudio(vk_session)
-            ###
-            
-            track = vk_audio.get_audio_by_id(int(audio_split[3]), int(audio_split[4]))
-            res = requests.get(track['url'])
-            bot.send_audio(call.from_user.id, res.content, title=track['artist'] + ' - ' + track['title'])
 
     except Exception as e:
         print('Error in audio_row_callback:', e)
         print(traceback.format_exc())
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_inline(call):
-    # Если сообщение из чата с ботом
-    if call.message:
-        msg = call.data
-        
-        if search("photo", msg):
-            number = int(msg.replace("photo", ""))
-            photos = []
-            for entry in dbx.files_list_folder('/Host').entries:
-                photos.append(entry.name)
-
-            metadata, res = dbx.files_download(path="/Host/" + photos[number])
-            # if problem occurs with sending photo, write from PIL import Image
-            bot.send_photo(call.from_user.id, res.content)
-            file_id = "snapshot" + str(number)
-            bot.send_photo(call.from_user.id, file_id)
-
-        elif search("video", msg):
-            number = int(msg.replace("video", ""))
-            files = []
-            for file in dbx.files_list_folder('/Host').entries:
-                files.append(file.name)
-            metadata, res = dbx.files_download(path="/Host/" + files[number])
-            bot.send_video(call.from_user.id, res.content)
-            file_id = "video" + str(number)
-            bot.send_photo(call.from_user.id, file_id)
-        else:
-            pass
-        
 bot.polling(none_stop=True, interval=1)
