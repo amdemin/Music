@@ -57,6 +57,11 @@ def help_command(message):
     bot.send_message(message.from_user.id, "Enter the name of artist or song correctly, e.g: Сream Soda")
 
 
+@bot.message_handler(commands=['about'])
+def help_command(message):
+    bot.send_message(message.from_user.id, "The bot is created by Kamilla and Karina, enjoy))")
+
+
 @bot.message_handler(content_types=['text', 'audio'])
 def process_input(message, page=1, text=""):
     text = message.text
