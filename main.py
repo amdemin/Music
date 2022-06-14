@@ -59,7 +59,7 @@ def help_command(message):
 
 @bot.message_handler(commands=['about'])
 def help_command(message):
-    bot.send_message(message.from_user.id, "The bot is created by Kamilla and Karina, enjoy))")
+    bot.send_message(message.from_user.id, "The bot is created by Kamilla, Karina and Maria, enjoy))")
 
 
 @bot.message_handler(content_types=['text', 'audio'])
